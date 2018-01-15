@@ -21,10 +21,15 @@ public interface ViewhistoryFacadeLocal {
 
     List<Viewhistory> findAll();
     
+    /*
+    Поиск ШПИ - если нет, запрос идет к АСУ РПО серверу и ШПИ ложится в БД
+    */
     List<Viewhistory> findBarcode(String barcode);
 
     List<Viewhistory> findRange(int[] range);
-    
+    /*
+    Поиск ШПИ по БД, если нет, то возвращает null
+    */
     Ticket findTicket(String barcode);
 
     int count();

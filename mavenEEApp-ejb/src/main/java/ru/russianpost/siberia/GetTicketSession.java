@@ -41,7 +41,7 @@ import ru.russianpost.siberia.dataaccess.Ticket;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GetTicketSession {
 
-    @PersistenceContext(unitName = "PERSISTENT-EJB-TEST")
+    @PersistenceContext(unitName = "PERSISTENT-EJB")
     private EntityManager em;
     @Resource
     private SessionContext sessionContext;
