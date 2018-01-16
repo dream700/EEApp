@@ -38,7 +38,35 @@
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
                 </configuration>
             </plugin>
-<!--            <plugin>
+            <plugin>
+                <groupId>org.glassfish.maven.plugin</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>                   
+                    <glassfishDirectory>${local.glassfish.home}</glassfishDirectory>
+                    <domainDirectory>${local.glassfish.domainDir}</domainDirectory>
+                    <echo>true</echo>
+                    <debug>true</debug>
+                    <autoCreate>true</autoCreate>
+                    <host>${local.glassfish.host}</host>
+                    <user>${local.glassfish.user}</user>                    
+                    <!--<adminPassword>${local.glassfish.pwd}</adminPassword>-->
+                    <passwordFile>${local.glassfish.passfile}</passwordFile>
+                    <domain>
+                        <name>${local.glassfish.domain}</name>
+                        <httpPort>${local.glassfish.httpPort}</httpPort>
+                        <adminPort>${local.glassfish.adminPort}</adminPort>
+                    </domain>
+                    <components>
+                        <component>
+                            <name>${project.artifactId}</name>
+                            <artifact>${project.build.directory}/${project.build.finalName}.ear</artifact>
+                        </component>
+                    </components>
+                </configuration>
+            </plugin> 
+                       
+            <!--            <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.16.4</version>
