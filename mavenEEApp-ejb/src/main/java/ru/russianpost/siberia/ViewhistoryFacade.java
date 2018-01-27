@@ -21,7 +21,7 @@ import ru.russianpost.siberia.dataaccess.Ticket;
 @Stateless
 public class ViewhistoryFacade extends AbstractFacade<Viewhistory> implements ViewhistoryFacadeLocal {
 
-    @PersistenceContext(unitName = "PERSISTENT-EJB")
+    @PersistenceContext(unitName = "PERSISTENT-EJB-TEST")
     private EntityManager em;
 
     @Override

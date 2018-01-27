@@ -50,7 +50,7 @@ import ru.russianpost.siberia.dataaccess.TicketReq;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
 
-    @PersistenceContext(unitName = "PERSISTENT-EJB")
+    @PersistenceContext(unitName = "PERSISTENT-EJB-TEST")
     private EntityManager em;
     @Resource
     private SessionContext sessionContext;
