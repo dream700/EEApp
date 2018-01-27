@@ -192,8 +192,7 @@ public class GetTicketSession {
         List<Viewhistory> res = query.getResultList();
         return res;
     }
-    private static final Logger LOG = Logger.getLogger(GetTicketSession.class
-            .getName());
+    private static final Logger LOG = Logger.getLogger(GetTicketSession.class.getName());
 
     public String Test(String t) {
         return t;

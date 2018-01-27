@@ -5,10 +5,7 @@
  */
 package ru.russianpost.siberia;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -157,7 +154,8 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
 
     /*Формирование и запрос пакета SOAP
      */
-    public boolean getSOAPTicketRequest() throws SystemException, NotSupportedException {
+    public List<String> getSOAPTicketRequest() throws SystemException, NotSupportedException {
+        List<String> result = new ArrayList<>();
         utx = sessionContext.getUserTransaction();
         utx.begin();
         try {
@@ -165,15 +163,15 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
             List<Ticket> tks;
             while (!(tks = query.getResultList()).isEmpty()) {
                 SOAPBatchRequest instance = new SOAPBatchRequest(login, password);
-                SOAPMessage result;
+                SOAPMessage res;
                 try {
-                    result = instance.GetTicket(tks);
-                    if (result instanceof SOAPMessage) {
-                        SOAPBody soapBody = result.getSOAPBody();
+                    res = instance.GetTicket(tks);
+                    if (res instanceof SOAPMessage) {
+                        SOAPBody soapBody = res.getSOAPBody();
                         if (soapBody.hasFault()) {
                             throw new SOAPException("Fault with code: " + soapBody.getFault().getFaultCode());
                         }
-                        Document doc = result.getSOAPBody().extractContentAsDocument();
+                        Document doc = res.getSOAPBody().extractContentAsDocument();
                         doc.getDocumentElement().normalize();
                         String br = doc.getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
                         TicketReq tr = new TicketReq(br);
@@ -181,22 +179,21 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                             tk.setDateFetch(new Date());
                         }
                         em.persist(tr);
+                        result.add(br);
                     }
                 } catch (SOAPException | TransformerException ex) {
                     Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
-                    return false;
                 }
             }
             utx.commit();
         } catch (Exception ex) {
             Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
-        return true;
+        return result;
     }
 
     @Override
-    public boolean GetBatchTickets(List<String> tickets) throws NotSupportedException, SystemException {
+    public List<String> GetBatchTickets(List<String> tickets) throws NotSupportedException, SystemException {
         utx = sessionContext.getUserTransaction();
         utx.begin();
         try {
@@ -212,15 +209,23 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
             utx.commit();
         } catch (Exception ex) {
             Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
-        getSOAPTicketRequest();
-        return true;
+        return getSOAPTicketRequest();
     }
 
     @Override
     public String Test(String t) {
         return t;
+    }
+
+    @Override
+    public boolean GetReadyAnswer(String req) throws SystemException, NotSupportedException {
+        TicketReq tr = em.find(TicketReq.class, req);
+        if (tr == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

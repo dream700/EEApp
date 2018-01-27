@@ -11,7 +11,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import ru.russianpost.siberia.dataaccess.Historyrecord;
 import ru.russianpost.siberia.dataaccess.Ticket;
 
 /**

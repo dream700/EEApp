@@ -27,8 +27,13 @@ public class GetBatchTicketSRV {
     // "Web Service > Add Operation"
 
     @WebMethod(operationName = "GetBatchTickets")
-    public boolean GetBatchTickets(@WebParam(name = "tickets") List<String> tickets) throws SystemException, NotSupportedException {
+    public List<String> GetBatchTickets(@WebParam(name = "tickets") List<String> tickets) throws SystemException, NotSupportedException {
         return ejbRef.GetBatchTickets(tickets);
+    }
+
+    @WebMethod(operationName = "GetReadyAnswer")
+    public boolean GetReadyAnswer(@WebParam(name = "req") String req) throws SystemException, NotSupportedException {
+        return ejbRef.GetReadyAnswer(req);
     }
 
     @WebMethod(operationName = "Test")

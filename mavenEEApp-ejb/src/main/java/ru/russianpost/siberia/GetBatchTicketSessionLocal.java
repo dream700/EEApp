@@ -18,7 +18,9 @@ import javax.transaction.SystemException;
 @Local
 public interface GetBatchTicketSessionLocal {
 
-    boolean GetBatchTickets(List<String> tickets) throws SystemException, NotSupportedException;
+    List<String> GetBatchTickets(List<String> tickets) throws SystemException, NotSupportedException;
 
+    boolean GetReadyAnswer(String req) throws SystemException, NotSupportedException;
+    
     String Test(String t);
 }
