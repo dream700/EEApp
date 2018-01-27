@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
+import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -22,7 +23,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.xml.soap.SOAPBody;
@@ -117,7 +121,8 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
         return retNodeList;
     }
 
-    public boolean getSOAPTicketAnswer() throws SystemException, NotSupportedException {
+    @Schedule(hour = "*", minute = "*", second = "*/59")
+    public void getSOAPTicketAnswer() throws SystemException, NotSupportedException {
         utx = sessionContext.getUserTransaction();
         utx.begin();
         try {
@@ -130,7 +135,6 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                     SOAPBody soapBody = result.getSOAPBody();
                     if (soapBody.hasFault()) {
                         Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + soapBody.getFault().getFaultCode());
-                        return false;
                     }
                     Document doc = result.getSOAPBody().extractContentAsDocument();
                     doc.getDocumentElement().normalize();
@@ -142,14 +146,12 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                 } catch (SOAPException ex) {
                     Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
                     utx.rollback();
-                    return false;
                 }
             }
             utx.commit();
         } catch (Exception ex) {
             Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + ex.getMessage());
         }
-        return true;
     }
 
     /*Формирование и запрос пакета SOAP
@@ -220,12 +222,7 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
 
     @Override
     public boolean GetReadyAnswer(String req) throws SystemException, NotSupportedException {
-        TicketReq tr = em.find(TicketReq.class, req);
-        if (tr == null) {
-            return false;
-        } else {
-            return true;
-        }
+        TicketReq tk = em.find(TicketReq.class, req);
+        return (tk != null);
     }
-
 }

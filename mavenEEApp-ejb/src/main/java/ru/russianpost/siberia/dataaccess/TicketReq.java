@@ -26,7 +26,8 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "ticketreq", schema = "app")
 @NamedQueries({
-    @NamedQuery(name = "TicketReq.findAll", query = "SELECT t FROM TicketReq t")})
+    @NamedQuery(name = "TicketReq.findAll", query = "SELECT t FROM TicketReq t")
+    ,@NamedQuery(name = "TicketReq.findByticketrequest", query = "SELECT t FROM TicketReq t WHERE t.ticketrequest = :ticketrequest")})
 public class TicketReq implements Serializable {
 
     @Id
@@ -60,6 +61,25 @@ public class TicketReq implements Serializable {
 
     public void setTicketrequest(String ticketrequest) {
         this.ticketrequest = ticketrequest;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TicketReq)) {
+            return false;
+        }
+        TicketReq other = (TicketReq) obj;
+        if ((this.ticketrequest == null && other.ticketrequest != null) || (this.ticketrequest != null && !this.ticketrequest.equals(other.ticketrequest))) {
+            return true;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (ticketrequest != null ? ticketrequest.hashCode() : 0);
+        return hash;
     }
 
 }
