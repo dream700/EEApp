@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -23,10 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.xml.soap.SOAPBody;
@@ -121,36 +119,45 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
         return retNodeList;
     }
 
+    private AtomicBoolean busy = new AtomicBoolean(false);
+
     @Schedule(hour = "*", minute = "*", second = "*/59")
     public void getSOAPTicketAnswer() throws SystemException, NotSupportedException {
-        utx = sessionContext.getUserTransaction();
-        utx.begin();
+        if (!busy.compareAndSet(false, true)) {
+            return;
+        }
         try {
-            TypedQuery<TicketReq> query = em.createNamedQuery("TicketReq.findAll", TicketReq.class);
-            List<TicketReq> req = query.getResultList();
-            for (TicketReq ticketReq : req) {
-                SOAPBatchRequest instance = new SOAPBatchRequest(login, password);
-                try {
-                    SOAPMessage result = instance.GetResponseByTicket(ticketReq.getTicketrequest());
-                    SOAPBody soapBody = result.getSOAPBody();
-                    if (soapBody.hasFault()) {
-                        Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + soapBody.getFault().getFaultCode());
+            utx = sessionContext.getUserTransaction();
+            utx.begin();
+            try {
+                TypedQuery<TicketReq> query = em.createNamedQuery("TicketReq.findAll", TicketReq.class);
+                List<TicketReq> req = query.getResultList();
+                for (TicketReq ticketReq : req) {
+                    SOAPBatchRequest instance = new SOAPBatchRequest(login, password);
+                    try {
+                        SOAPMessage result = instance.GetResponseByTicket(ticketReq.getTicketrequest());
+                        SOAPBody soapBody = result.getSOAPBody();
+                        if (soapBody.hasFault()) {
+                            Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + soapBody.getFault().getFaultCode());
+                        }
+                        Document doc = result.getSOAPBody().extractContentAsDocument();
+                        doc.getDocumentElement().normalize();
+                        NodeList nList = doc.getElementsByTagName("ns2:answerByTicketResponse");
+                        for (int i = 0; i < nList.getLength(); i++) {
+                            getData(nList);
+                        }
+                        em.remove(ticketReq);
+                    } catch (SOAPException ex) {
+                        Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
+                        utx.rollback();
                     }
-                    Document doc = result.getSOAPBody().extractContentAsDocument();
-                    doc.getDocumentElement().normalize();
-                    NodeList nList = doc.getElementsByTagName("ns2:answerByTicketResponse");
-                    for (int i = 0; i < nList.getLength(); i++) {
-                        getData(nList);
-                    }
-                    em.remove(ticketReq);
-                } catch (SOAPException ex) {
-                    Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
-                    utx.rollback();
                 }
+                utx.commit();
+            } catch (Exception ex) {
+                Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + ex.getMessage());
             }
-            utx.commit();
-        } catch (Exception ex) {
-            Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + ex.getMessage());
+        } finally {
+            busy.set(false);
         }
     }
 
