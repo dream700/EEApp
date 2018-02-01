@@ -49,7 +49,7 @@ import ru.russianpost.siberia.dataaccess.TicketReq;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
 
-    @PersistenceContext(unitName = "PERSISTENT-EJB-TEST")
+    @PersistenceContext(unitName = "PERSISTENT-EJB")
     private EntityManager em;
     @Resource
     private SessionContext sessionContext;
@@ -129,8 +129,10 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
         try {
             utx = sessionContext.getUserTransaction();
             utx.begin();
+            Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.INFO, null, "getSOAPTicketAnswer() started");
             try {
                 TypedQuery<TicketReq> query = em.createNamedQuery("TicketReq.findAll", TicketReq.class);
+                query.setMaxResults(2);
                 List<TicketReq> req = query.getResultList();
                 for (TicketReq ticketReq : req) {
                     SOAPBatchRequest instance = new SOAPBatchRequest(login, password);
@@ -147,12 +149,13 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                             getData(nList);
                         }
                         em.remove(ticketReq);
+                        utx.commit();
                     } catch (SOAPException ex) {
                         Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
                         utx.rollback();
                     }
                 }
-                utx.commit();
+                Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.INFO, null, "getSOAPTicketAnswer() finish");
             } catch (Exception ex) {
                 Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + ex.getMessage());
             }
