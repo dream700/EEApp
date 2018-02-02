@@ -39,7 +39,7 @@ import ru.russianpost.siberia.dataaccess.Ticket;
 @Stateless
 @LocalBean
 @TransactionManagement(TransactionManagementType.BEAN)
-public class GetTicketSession {
+public class GetTicketSession implements GetTicketSessionLocal {
 
     @PersistenceContext(unitName = "PERSISTENT-EJB")
     private EntityManager em;
@@ -138,6 +138,7 @@ public class GetTicketSession {
         return retNodeList;
     }
 
+    @Override
     public List<Viewhistory> getTicket(String barcode) throws SystemException, NotSupportedException {
         utx = sessionContext.getUserTransaction();
         utx.begin();
@@ -194,6 +195,7 @@ public class GetTicketSession {
     }
     private static final Logger LOG = Logger.getLogger(GetTicketSession.class.getName());
 
+    @Override
     public String Test(String t) {
         return t;
     }

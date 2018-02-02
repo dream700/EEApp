@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Andrey.Isakov
  */
 @Entity
-@Table(name = "viewhistory",schema = "app")
+@Table(name = "viewhistory", schema = "app")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Viewhistory.findAll", query = "SELECT v FROM Viewhistory v")
@@ -33,16 +33,19 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Viewhistory.findByNametype", query = "SELECT v FROM Viewhistory v WHERE v.nametype = :nametype")
     , @NamedQuery(name = "Viewhistory.findByOperatondelta", query = "SELECT v FROM Viewhistory v WHERE v.operatondelta = :operatondelta")
     , @NamedQuery(name = "Viewhistory.findByOperationaddressIndex", query = "SELECT v FROM Viewhistory v WHERE v.operationaddressIndex = :operationaddressIndex")
+    , @NamedQuery(name = "Viewhistory.findByDestinationaddressindex", query = "SELECT v FROM Viewhistory v WHERE v.destinationaddressIndex = :destinationaddressIndex")        
     , @NamedQuery(name = "Viewhistory.findByOpertypeid", query = "SELECT v FROM Viewhistory v WHERE v.opertypeid = :opertypeid")
     , @NamedQuery(name = "Viewhistory.findByOperattrid", query = "SELECT v FROM Viewhistory v WHERE v.operattrid = :operattrid")})
 public class Viewhistory implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Column(name = "barcode")
-    @Id private String barcode;
+    @Id
+    private String barcode;
     @Column(name = "operdate")
     @Temporal(TemporalType.TIMESTAMP)
-    @Id private Date operdate;
+    @Id
+    private Date operdate;
     @Column(name = "lastoperdate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastoperdate;
@@ -53,11 +56,16 @@ public class Viewhistory implements Serializable {
     @Column(name = "operatondelta")
     private Integer operatondelta;
     @Column(name = "operationaddress_index")
-    @Id private String operationaddressIndex;
+    @Id
+    private String operationaddressIndex;
+    @Column(name = "destinationaddress_index")
+    private String destinationaddressIndex;
     @Column(name = "opertypeid")
-    @Id private Integer opertypeid;
+    @Id
+    private Integer opertypeid;
     @Column(name = "operattrid")
-    @Id private Integer operattrid;
+    @Id
+    private Integer operattrid;
 
     public Viewhistory() {
     }
@@ -118,6 +126,14 @@ public class Viewhistory implements Serializable {
         this.operationaddressIndex = operationaddressIndex;
     }
 
+    public String getDestinationaddressIndex() {
+        return destinationaddressIndex;
+    }
+
+    public void setDestinationaddressIndex(String destinationaddressIndex) {
+        this.destinationaddressIndex = destinationaddressIndex;
+    }
+
     public Integer getOpertypeid() {
         return opertypeid;
     }
@@ -133,5 +149,5 @@ public class Viewhistory implements Serializable {
     public void setOperattrid(Integer operattrid) {
         this.operattrid = operattrid;
     }
-    
+
 }
