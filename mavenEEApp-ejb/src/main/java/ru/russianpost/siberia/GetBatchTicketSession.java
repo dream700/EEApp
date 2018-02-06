@@ -119,9 +119,9 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
         return retNodeList;
     }
 
-    private AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
-    @Schedule(hour = "*", minute = "*", second = "*/59")
+    @Schedule(hour = "*", minute = "*/2", persistent = false)
     public void getSOAPTicketAnswer() throws SystemException, NotSupportedException {
         if (!busy.compareAndSet(false, true)) {
             return;
@@ -129,13 +129,13 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
         try {
             utx = sessionContext.getUserTransaction();
             Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.INFO, null, "getSOAPTicketAnswer() started");
+            utx.begin();
             try {
                 TypedQuery<TicketReq> query = em.createNamedQuery("TicketReq.findAll", TicketReq.class);
                 query.setMaxResults(2);
                 List<TicketReq> req = query.getResultList();
                 for (TicketReq ticketReq : req) {
                     SOAPBatchRequest instance = new SOAPBatchRequest(login, password);
-                    utx.begin();
                     try {
                         SOAPMessage result = instance.GetResponseByTicket(ticketReq.getTicketrequest());
                         SOAPBody soapBody = result.getSOAPBody();
@@ -149,15 +149,15 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                             getData(nList);
                         }
                         em.remove(ticketReq);
-                        utx.commit();
                     } catch (SOAPException ex) {
                         Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
-                        utx.rollback();
                     }
                 }
+                utx.commit();
                 Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.INFO, null, "getSOAPTicketAnswer() finish");
             } catch (Exception ex) {
                 Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + ex.getMessage());
+                utx.rollback();
             }
         } finally {
             busy.set(false);
