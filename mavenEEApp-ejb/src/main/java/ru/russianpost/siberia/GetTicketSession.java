@@ -150,6 +150,7 @@ public class GetTicketSession implements GetTicketSessionLocal {
                 em.persist(ticket);
             }
             if (!ticket.isIsFinal()) {
+                JSONTicketDetail.getTicketDetailData(ticket);
                 SOAPRequest instance = new SOAPRequest(login, password);
                 SOAPMessage soapmessage;
                 soapmessage = instance.GetTicket(ticket.getBarcode());
@@ -193,6 +194,7 @@ public class GetTicketSession implements GetTicketSessionLocal {
         List<Viewhistory> res = query.getResultList();
         return res;
     }
+
     private static final Logger LOG = Logger.getLogger(GetTicketSession.class.getName());
 
     @Override

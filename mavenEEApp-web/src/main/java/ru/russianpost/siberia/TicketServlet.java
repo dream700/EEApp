@@ -27,7 +27,7 @@ public class TicketServlet extends HttpServlet {
 
     @EJB
     private GetTicketSession getTicketSession;
-
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -79,7 +79,6 @@ public class TicketServlet extends HttpServlet {
                 out.println("Ошибка на сервер!");
                 Logger.getLogger(TicketServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
-
             out.println("</tbody>");
             out.println("</table>");
             out.println("</body>");

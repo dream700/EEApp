@@ -62,6 +62,35 @@ public class Ticket implements Serializable {
     private Collection<Historyrecord> historyrecordCollection;
     @Column(name = "isFinal")
     private boolean isFinal;
+    @Column(name="po_version",length = 20)
+    private String po_version;
+    @Column(name="recp_name",length = 120)
+    private String recp_name;
+    @Column(name="recp_index",length = 6)
+    private String recp_index;
+    @Column(name="recp_region",length = 120)
+    private String recp_region;    
+    @Column(name="recp_area",length = 120)
+    private String recp_area;    
+    @Column(name="recp_place",length = 120)
+    private String recp_place;
+    @Column(name="recp_street",length = 100)
+    private String recp_street;
+    @Column(name="sender_name",length = 120)
+    private String sender_name;
+    @Column(name="sender_index",length = 6)
+    private String sender_index;
+    @Column(name="sender_region",length = 120)    
+    private String sender_region;       
+    @Column(name="sender_area",length = 120)    
+    private String sender_area;
+    @Column(name="sender_place",length = 120)    
+    private String sender_place;
+    @Column(name="sender_street",length = 100)    
+    private String sender_street;
+    @Column(name="sender_value",length = 50)    
+    private String sender_value;
+    
 
     public boolean isIsFinal() {
         return isFinal;
@@ -108,6 +137,120 @@ public class Ticket implements Serializable {
         this.historyrecordCollection = historyrecordCollection;
     }
 
+    public String getPo_version() {
+        return po_version;
+    }
+
+    public void setPo_version(String po_version) {
+        this.po_version = po_version;
+    }
+
+    public String getRecp_name() {
+        return recp_name;
+    }
+
+    public void setRecp_name(String recp_name) {
+        this.recp_name = recp_name;
+    }
+
+    public String getRecp_index() {
+        return recp_index;
+    }
+
+    public void setRecp_index(String recp_index) {
+        this.recp_index = recp_index;
+    }
+
+    public String getRecp_region() {
+        return recp_region;
+    }
+
+    public void setRecp_region(String recp_region) {
+        this.recp_region = recp_region;
+    }
+
+    public String getRecp_area() {
+        return recp_area;
+    }
+
+    public void setRecp_area(String recp_area) {
+        this.recp_area = recp_area;
+    }
+
+    public String getRecp_place() {
+        return recp_place;
+    }
+
+    public void setRecp_place(String recp_place) {
+        this.recp_place = recp_place;
+    }
+
+    public String getRecp_street() {
+        return recp_street;
+    }
+
+    public void setRecp_street(String recp_street) {
+        this.recp_street = recp_street;
+    }
+
+    public String getSender_name() {
+        return sender_name;
+    }
+
+    public void setSender_name(String sender_name) {
+        this.sender_name = sender_name;
+    }
+
+    public String getSender_index() {
+        return sender_index;
+    }
+
+    public void setSender_index(String sender_index) {
+        this.sender_index = sender_index;
+    }
+
+    public String getSender_region() {
+        return sender_region;
+    }
+
+    public void setSender_region(String sender_region) {
+        this.sender_region = sender_region;
+    }
+
+    public String getSender_area() {
+        return sender_area;
+    }
+
+    public void setSender_area(String sender_area) {
+        this.sender_area = sender_area;
+    }
+
+    public String getSender_place() {
+        return sender_place;
+    }
+
+    public void setSender_place(String sender_place) {
+        this.sender_place = sender_place;
+    }
+
+    public String getSender_street() {
+        return sender_street;
+    }
+
+    public void setSender_street(String sender_street) {
+        this.sender_street = sender_street;
+    }
+
+    public String getSender_value() {
+        return sender_value;
+    }
+
+    public void setSender_value(String sender_value) {
+        this.sender_value = sender_value;
+    }
+
+    
+    
     @Override
     public int hashCode() {
         int hash = 0;

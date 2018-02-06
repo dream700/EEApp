@@ -128,7 +128,6 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
         }
         try {
             utx = sessionContext.getUserTransaction();
-            utx.begin();
             Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.INFO, null, "getSOAPTicketAnswer() started");
             try {
                 TypedQuery<TicketReq> query = em.createNamedQuery("TicketReq.findAll", TicketReq.class);
@@ -136,6 +135,7 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                 List<TicketReq> req = query.getResultList();
                 for (TicketReq ticketReq : req) {
                     SOAPBatchRequest instance = new SOAPBatchRequest(login, password);
+                    utx.begin();
                     try {
                         SOAPMessage result = instance.GetResponseByTicket(ticketReq.getTicketrequest());
                         SOAPBody soapBody = result.getSOAPBody();
@@ -188,6 +188,7 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                         String br = doc.getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
                         TicketReq tr = new TicketReq(br);
                         for (Ticket tk : tks) {
+                            JSONTicketDetail.getTicketDetailData(tk);
                             tk.setDateFetch(new Date());
                         }
                         em.persist(tr);

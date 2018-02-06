@@ -41,6 +41,16 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>net.sf.corn</groupId>
+            <artifactId>corn-httpclient</artifactId>
+            <version>1.0.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20171018</version>
+        </dependency>
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>

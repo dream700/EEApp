@@ -16,7 +16,7 @@ import ru.russianpost.siberia.dataaccess.Viewhistory;
 
 /**
  *
- * @author andy
+ * @author Andrey.Isakov
  */
 @WebService(serviceName = "ViewHistorySERV")
 @Stateless()

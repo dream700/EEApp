@@ -9,6 +9,7 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
+import ru.russianpost.siberia.dataaccess.Ticket;
 import ru.russianpost.siberia.dataaccess.Viewhistory;
 
 /**
