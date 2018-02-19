@@ -150,7 +150,7 @@ public class GetTicketSession implements GetTicketSessionLocal {
                 em.persist(ticket);
             }
             if (!ticket.isIsFinal()) {
-                JSONTicketDetail.getTicketDetailData(ticket);
+//                JSONTicketDetail.getTicketDetailData(ticket);
                 SOAPRequest instance = new SOAPRequest(login, password);
                 SOAPMessage soapmessage;
                 soapmessage = instance.GetTicket(ticket.getBarcode());

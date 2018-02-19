@@ -39,7 +39,7 @@ import javax.xml.soap.SOAPElement;
 @Entity
 @Table(name = "ticket", schema = "app")
 @XmlRootElement(name = "ticket")
-@XmlAccessorType (XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 @NamedQueries({
     @NamedQuery(name = "Ticket.findAll", query = "SELECT t FROM Ticket t")
     , @NamedQuery(name = "Ticket.findByBarcode", query = "SELECT t FROM Ticket t WHERE t.barcode = :barcode")
@@ -56,41 +56,40 @@ public class Ticket implements Serializable {
     @Column(name = "DateFetch")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateFetch;
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "barcode", referencedColumnName = "barcode")
     @XmlElement(name = "historyrecord")
     private Collection<Historyrecord> historyrecordCollection;
     @Column(name = "isFinal")
     private boolean isFinal;
-    @Column(name="po_version",length = 20)
+    @Column(name = "po_version", length = 20)
     private String po_version;
-    @Column(name="recp_name",length = 120)
+    @Column(name = "recp_name", length = 120)
     private String recp_name;
-    @Column(name="recp_index",length = 6)
+    @Column(name = "recp_index", length = 6)
     private String recp_index;
-    @Column(name="recp_region",length = 120)
-    private String recp_region;    
-    @Column(name="recp_area",length = 120)
-    private String recp_area;    
-    @Column(name="recp_place",length = 120)
+    @Column(name = "recp_region", length = 120)
+    private String recp_region;
+    @Column(name = "recp_area", length = 120)
+    private String recp_area;
+    @Column(name = "recp_place", length = 120)
     private String recp_place;
-    @Column(name="recp_street",length = 100)
+    @Column(name = "recp_street", length = 100)
     private String recp_street;
-    @Column(name="sender_name",length = 120)
+    @Column(name = "sender_name", length = 120)
     private String sender_name;
-    @Column(name="sender_index",length = 6)
+    @Column(name = "sender_index", length = 6)
     private String sender_index;
-    @Column(name="sender_region",length = 120)    
-    private String sender_region;       
-    @Column(name="sender_area",length = 120)    
+    @Column(name = "sender_region", length = 120)
+    private String sender_region;
+    @Column(name = "sender_area", length = 120)
     private String sender_area;
-    @Column(name="sender_place",length = 120)    
+    @Column(name = "sender_place", length = 120)
     private String sender_place;
-    @Column(name="sender_street",length = 100)    
+    @Column(name = "sender_street", length = 100)
     private String sender_street;
-    @Column(name="sender_value",length = 50)    
+    @Column(name = "sender_value", length = 50)
     private String sender_value;
-    
 
     public boolean isIsFinal() {
         return isFinal;
@@ -249,8 +248,6 @@ public class Ticket implements Serializable {
         this.sender_value = sender_value;
     }
 
-    
-    
     @Override
     public int hashCode() {
         int hash = 0;

@@ -103,7 +103,7 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                     his.setOperTypeName(getTagValue("OperName", eElement));
                     his.setOperAttrID(getTagValue("OperCtgID", eElement));
                     his.setOperDate(getTagValue("DateOper", eElement), true);
-                    his.setOperationAddressIndex(getTagValue("IndexOper", eElement));
+                    his.setOperationAddressIndex(getTagValue("IndexOper", eElement).substring(0, 5));
                     his.setBarcode(ticket);
                     if ((his.getOperTypeID() == 2) | ((his.getOperAttrID() == 1) | (his.getOperAttrID() == 2)) & (his.getOperTypeID() == 5)) {
                         ticket.setIsFinal(true);
@@ -121,8 +121,8 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
-    @Schedule(hour = "*", minute = "*/2", persistent = false)
-    public void getSOAPTicketAnswer() throws SystemException, NotSupportedException {
+    @Schedule(hour = "*", minute = "*/2")
+    public void getSOAPTicketAnswer() {
         if (!busy.compareAndSet(false, true)) {
             return;
         }
@@ -141,16 +141,17 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                         SOAPBody soapBody = result.getSOAPBody();
                         if (soapBody.hasFault()) {
                             Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + soapBody.getFault().getFaultCode());
+                        } else {
+                            Document doc = result.getSOAPBody().extractContentAsDocument();
+                            doc.getDocumentElement().normalize();
+                            NodeList nList = doc.getElementsByTagName("ns2:answerByTicketResponse");
+                            for (int i = 0; i < nList.getLength(); i++) {
+                                getData(nList);
+                            }
+                            em.remove(ticketReq);
                         }
-                        Document doc = result.getSOAPBody().extractContentAsDocument();
-                        doc.getDocumentElement().normalize();
-                        NodeList nList = doc.getElementsByTagName("ns2:answerByTicketResponse");
-                        for (int i = 0; i < nList.getLength(); i++) {
-                            getData(nList);
-                        }
-                        em.remove(ticketReq);
                     } catch (SOAPException ex) {
-                        Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "SOAP Error: " + ex.getMessage());
                     }
                 }
                 utx.commit();
@@ -159,6 +160,8 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                 Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + ex.getMessage());
                 utx.rollback();
             }
+        } catch (Exception ex) {
+            Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Fault with code: " + ex.getMessage());
         } finally {
             busy.set(false);
         }
@@ -182,25 +185,26 @@ public class GetBatchTicketSession implements GetBatchTicketSessionLocal {
                         SOAPBody soapBody = res.getSOAPBody();
                         if (soapBody.hasFault()) {
                             throw new SOAPException("Fault with code: " + soapBody.getFault().getFaultCode());
+                        } else {
+                            Document doc = res.getSOAPBody().extractContentAsDocument();
+                            doc.getDocumentElement().normalize();
+                            String br = doc.getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
+                            TicketReq tr = new TicketReq(br);
+                            for (Ticket tk : tks) {
+//                            JSONTicketDetail.getTicketDetailData(tk);
+                                tk.setDateFetch(new Date());
+                            }
+                            em.persist(tr);
+                            result.add(br);
                         }
-                        Document doc = res.getSOAPBody().extractContentAsDocument();
-                        doc.getDocumentElement().normalize();
-                        String br = doc.getElementsByTagName("value").item(0).getFirstChild().getNodeValue();
-                        TicketReq tr = new TicketReq(br);
-                        for (Ticket tk : tks) {
-                            JSONTicketDetail.getTicketDetailData(tk);
-                            tk.setDateFetch(new Date());
-                        }
-                        em.persist(tr);
-                        result.add(br);
                     }
                 } catch (SOAPException | TransformerException ex) {
-                    Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "SOAP Exception: " + ex.getMessage());
                 }
             }
             utx.commit();
         } catch (Exception ex) {
-            Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GetBatchTicketSession.class.getName()).log(Level.SEVERE, null, "Commit exception: "+ex.getMessage());
         }
         return result;
     }
